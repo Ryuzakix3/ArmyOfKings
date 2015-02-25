@@ -116,7 +116,7 @@ class Erfahrung extends player {
 
 class Inventar extends player {
     function getInventar( $index ) {
-        if (!empty($index)) {
+        if ($index == "NULL") {
             echo '<ul></br>';
             for ($i = 0; count($this->Inventar); $i++) {
                 echo $i.". Itemname: ".$this->Inventar[$i]." </br>";
