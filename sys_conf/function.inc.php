@@ -7,11 +7,20 @@ class player {
     public $raum = "1";
     public $ATK = "15";
     public $DEF = "10";
+    public $TP = "1000";
     public $Waffe = "Holzschwert";
     public $Ruesstung = "Leder-Kleid";
     public $Inventar = array();
     
     // PLAYER FUNCTIONS //
+    function setTP( $new_tp ) {
+        $this->TP = $new_tp;
+    }
+    
+    function getTP() {
+        return $this->TP;
+    }
+    
     function setLevel( $new_level ) {
         $this->Level = $new_level;
         return $this->Level;
@@ -98,20 +107,42 @@ class Inventar extends player {
     
     function setItemToInventar( $itemname, $index ) {
         if (!empty($index)) {
-            
+            $this->Inventar[$index] = $itemname;
         }
         else {
-            
+            $this->Inventar[(count($this->Inventar) + 1)] = $itemname; 
         }
     }
     
 }
 
 class Monster extends player {
+    public $MonsterName = "Hunriger Bär";
+    public $MonsterATK = "10";
+    public $MonsterDEF = "8";
     
+    function setMonsterATK( $new_atk ) {
+        $this->MonsterATK = $new_atk;
+    }
+    
+    function getMonsterATK() {
+        return $this->MonsterATK;     
+    }
+    
+     function setMonsterDEF( $new_def ) {
+        $this->MonsterDEF = $new_def;
+    }
+    
+    function getMonsterDEF() {
+        return $this->MonsterDEF;     
+    }   
 }
 
 class Raum extends player {
+    
+}
+
+class Battle extends Monster {
     
 }
 
