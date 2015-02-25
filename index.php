@@ -28,12 +28,21 @@ and open the template in the editor.
         
            <div id="inventar" style="visibility: hidden">
                 <?php
+                    $inventar = new Inventar();
+                    $inventar->getInventar();
                 ?>
            </div>
         
             <div id="create_player" style="visibility: hidden">
                 <?php
+                    $player = new player();
+                    $player->setPlayerName("Klaus");
+                    $player->setLevel("1");
+                    $player->setNewWeapon("Holzschwert", "15");
+                    $player->setNewRuestung("Holz-Hemd", "7");
+                    echo "Spieler erfolgreich ersellt. </br>"
                 ?>
+                
             </div>
     </body>
     
