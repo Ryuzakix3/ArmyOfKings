@@ -102,19 +102,13 @@ class player {
     
 }
 
-class SaveToAccount extends player {
-    function save( $player_name, $player_waffe, $player_ruestung, $player_atk, $player_def) {
-        $conn = new mysqli("127.0.01", "root", "");
-        if (!$conn->connect_error) {
-             echo "<div class=\"alert alert-danger\" role=\"alert\"> Fehler beim Verbinden mit dem Datenbank Server.</div></br>";
-        }
-        $conn->select_db("homepage");
+class Account extends Player {
+    function login( $id, $pw ) {   
     }
-}
-
-class LoadFromAccount extends player {
-    function load() {
-        
+    function isLogin( $id ) {   
+    }
+    
+    function loadDatafromDB( $id ) { 
     }
 }
 
@@ -133,16 +127,15 @@ class Erfahrung extends player {
 }
 
 class Inventar extends player {
-    function getInventar( $index ) {
+    function getInventar( $index, $array ) {
         if ($index == "NULL") {
-            echo '<ul></br>';
-            for ($i = 0; count($this->Inventar); $i++) {
-                echo $i.". Itemname: ".$this->Inventar[$i]." </br>";
+            $i = 0;
+            echo "<ul></br>";
+            while ($i <= (count($array) -1)) {
+                echo "<li>".$array[$i]."</li>";
+                $i++;
             }
-            echo '</ul></br>';
-        }
-        else {
-            return $this->Inventar[$index];
+            echo "</ul></br>";
         }
     }
     
@@ -153,8 +146,7 @@ class Inventar extends player {
         else {
             $this->Inventar[(count($this->Inventar) + 1)] = $itemname; 
         }
-    }
-    
+    }    
 }
 
 class Monster extends player {

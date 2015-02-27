@@ -12,8 +12,13 @@
   <div class="panel-heading">Inventar</div>
         <div class="panel-body">
             <?php
-                $Inventar = new Inventar;
-                $Inventar->getInventar("NULL");
+                if (!empty($_SESSION['player_created'])) {
+                    $Inventar = new Inventar;
+                    $Inventar->getInventar("NULL", $_SESSION['player_inventar']);
+                }
+                else {
+                    echo "<div class=\"alert alert-danger\" role=\"alert\"> Bitte erstelle zuerst einen Spieler.</div></br>";
+                }
             ?>
         </div>
 </div>

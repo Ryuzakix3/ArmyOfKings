@@ -23,11 +23,12 @@
             $_SESSION['player_armor'] = $player->getRuestung();
             $_SESSION['player_def'] = $player->getDef();
             $_SESSION['player_created'] = "True";
+            $_SESSION['player_inventar'] = array('Holzschwert', "Holz-Hemd");
             
             echo "<div class=\"alert alert-success\" role=\"alert\">Dein Spieler wurde erfolgreich ersellt.</div></br>";
         }
         else {
-            echo "<div class=\"alert alert-danger\" role=\"alert\"> Du hast noch bereits einen Spieler.</div></br>";
+            echo "<div class=\"alert alert-danger\" role=\"alert\"> Du hast bereits einen Spieler.</div></br>";
         }
                     
         
