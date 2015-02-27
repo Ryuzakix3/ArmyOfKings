@@ -42,7 +42,4 @@ and open the template in the editor.
             <script src="js/bootstrap.min.js"></script>
         </div>
     </body>
-    
-    <script type="text/javascript">
-    </script>
 </html>

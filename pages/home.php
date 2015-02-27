@@ -8,22 +8,29 @@
     <li role="presentation"><a href="index.php?p=store">Laden</a></li>
 </ul>
 <?php
-    if (!empty($_GET['created'])) {
-        $player = new player();
-        $player->setPlayerName($_GET['name']);
-        $player->setLevel("1");
-        $player->setNewWeapon("Holzschwert", "15");
-        $player->setNewRuestung("Holz-Hemd", "7");
+    if (!empty($_GET['player_name'])) {
+        if (!isset($_SESSION['player_created'])) {
+            $player = new player();
+            $player->setPlayerName($_GET['player_name']);
+            $player->setLevel("1");
+            $player->setNewWeapon("Holzschwert", "15");
+            $player->setNewRuestung("Holz-Hemd", "7");
                     
-        $_SESSION['player_name'] = $player->getPlayerName();
-        $_SESSION['player_level'] = $player->getLevel();
-        $_SESSION['player_weapon'] = $player->getWeapon();
-        $_SESSION['player_atk'] = $player->getAtk();
-        $_SESSION['player_armor'] = $player->getRuestung();
-        $_SESSION['player_def'] = $player->getDef();
-        $_SESSION['player_created'] = "True";
+            $_SESSION['player_name'] = $player->getPlayerName();
+            $_SESSION['player_level'] = $player->getLevel();
+            $_SESSION['player_weapon'] = $player->getWeapon();
+            $_SESSION['player_atk'] = $player->getAtk();
+            $_SESSION['player_armor'] = $player->getRuestung();
+            $_SESSION['player_def'] = $player->getDef();
+            $_SESSION['player_created'] = "True";
+            
+            echo "<div class=\"alert alert-success\" role=\"alert\">Dein Spieler wurde erfolgreich ersellt.</div></br>";
+        }
+        else {
+            echo "<div class=\"alert alert-danger\" role=\"alert\"> Du hast noch bereits einen Spieler.</div></br>";
+        }
                     
-        echo "<div class=\"alert alert-success\" role=\"alert\">Dein Spieler wurde erfolgreich ersellt.</div></br>";
+        
     }
 ?>
 

@@ -27,6 +27,6 @@
 <script type="text/javascript">
     function onCreatePlayer() {
         var name = $('#spieler_name').val();
-        window.location.href = window.location.href.replace( /[\?#].*|$/, "?created=1?name=" + name );
+        window.location.href = window.location.href.replace( /[\?#].*|$/, "?player_name=" + name);
     }
 </script>

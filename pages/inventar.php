@@ -12,6 +12,8 @@
   <div class="panel-heading">Inventar</div>
         <div class="panel-body">
             <?php
+                $Inventar = new Inventar;
+                $Inventar->getInventar("NULL");
             ?>
         </div>
 </div>
