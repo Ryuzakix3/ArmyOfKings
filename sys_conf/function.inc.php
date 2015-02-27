@@ -1,4 +1,6 @@
 <?php
+include './sys_conf/config.inc.php';
+
 class player {
     public $playername = "";
     public $Level = "";
@@ -71,11 +73,11 @@ class player {
     }
     
     function getWeapon() {
-        return $this->Waffe();
+        return $this->Waffe;
     }
     
     function setWeapon( $new_weapon ) {
-        $this->Waffe($new_weapon);
+        $this->Waffe = $new_weapon;
     }
     
     // END //
@@ -90,14 +92,30 @@ class player {
     }
     
     function getRuestung() {
-        return $this->Ruestung();
+        return $this->Ruestung;
     }
     
     function setuesstung( $new_ruesstung ) {
-        $this->Ruestung($new_ruesstung);
+        $this->Ruestung = $new_ruesstung;
     }
     //
     
+}
+
+class SaveToAccount extends player {
+    function save( $player_name, $player_waffe, $player_ruestung, $player_atk, $player_def) {
+        $conn = new mysqli("127.0.01", "root", "");
+        if (!$conn->connect_error) {
+             echo "<div class=\"alert alert-danger\" role=\"alert\"> Fehler beim Verbinden mit dem Datenbank Server.</div></br>";
+        }
+        $conn->select_db("homepage");
+    }
+}
+
+class LoadFromAccount extends player {
+    function load() {
+        
+    }
 }
 
 class Erfahrung extends player {
@@ -159,4 +177,57 @@ class Monster extends player {
     function getMonsterDEF() {
         return $this->MonsterDEF;     
     }   
+}
+
+class Raum extends player {
+    public $Raum = "1";
+    public $Wetter_Array = array("Die Sonne scheint.", "Es regnet gleich", "Es schneit");
+    public $Wetter = "Regen";
+    
+    function next_room() {
+        $this->Raum = $this->Raum + 1;
+        $this->setWetter();
+    }
+    
+    function getRandWetter() {
+        return ($this->Wetter_Array[rand(0, count($this->Wetter_Array))]);
+    }
+    
+    function getWetter() {
+        return $this->Wetter;  
+    }
+    
+    function setWetter( $neues_wetter ) {
+        $this->Wetter = $neues_wetter;
+    }
+    
+    function getRoomNumber() {
+        return $this->Raum;
+    }
+}
+
+class Battle extends Inventar{
+     function init_battle( $gegner_id, $eigene_id) {   
+     }
+     
+     function battle_start() {
+     }
+     
+     function battle_winner() {
+     }
+}
+
+class Laden {
+    function open_shop() {  
+    }
+    
+    function buy_item( $index ) {
+    }
+    
+    function sell_item( $index ) {
+    } 
+    
+    function tax() {
+    }
+    
 }
