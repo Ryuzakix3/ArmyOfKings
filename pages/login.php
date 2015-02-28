@@ -19,7 +19,6 @@
                     if (!empty($_POST["username"])) {
                         $login = new Account;
                         if ($login->login($_POST['username'], $_POST['password'])) {
-                            echo "benis4";
                             echo "<div class=\"alert alert-success\" role=\"alert\">Du hast dich erfolgreich eingeloggt.</div></br>";
                             echo "<div class=\"alert alert-success\" role=\"alert\">Du wirst in 7 Sekunden automatisch weitergeleitet.</div></br>";
                             echo "<meta http-equiv=\"refresh\" content=\"7; URL=index.php?p=home\">";
