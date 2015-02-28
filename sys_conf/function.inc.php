@@ -2,6 +2,10 @@
 include './sys_conf/config.inc.php';
 
 class player {
+    public $mysql_addr = "localhost";
+    public $mysql_user = "root";
+    public $mysql_password = "";
+    public $mysql_database = "homepage";
     public $playername = "";
     public $Level = "";
     public $playerep = "0";
@@ -98,7 +102,41 @@ class player {
     function setuesstung( $new_ruesstung ) {
         $this->Ruestung = $new_ruesstung;
     }
-    //
+    // 
+    function existsPlayerName( $name ) { 
+        $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+        if ($conn->connect_errno) {
+            die("MySQL-Fehler: ".$conn->connect_error);
+        }
+        $new_name = $conn->real_escape_string($name);
+        $sql = "SELECT * FROM player WHERE player_name = '".$new_name."';";
+        $result = $conn->query($sql);
+        if (!$result) {
+            die("MySQL-Fehler: ".$conn->error);
+        }
+        if (($result->num_rows) > 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    function createNewPlayer( $player_name ) {
+        $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+        if ($conn->connect_errno) {
+            die("MySQL-Fehler: ".$conn->connect_error);
+        }
+        $new_name = $conn->real_escape_string($player_name);
+        $sql = "INSERT INTO player (account_id, player_name, player_level, player_waffe, player_ruestung, player_atk, player_def) VALUES ('".$conn->real_escape_string($_SESSION['user_id'])."', '".$new_name."', '1', 'Holzschwert', 'Holz-Hemd', '15', '10');";
+        $result = $conn->query($sql);
+        if (!$result) {
+            die("MySQL-Fehler: ".$conn->error);
+        }
+        else {
+            return true;
+        }
+    }
     
 }
 
@@ -164,9 +202,7 @@ class Account extends Player {
         $result = $conn->query("SELECT * FROM player WHERE account_id = '".$id_new."';");
         if ($result->num_rows == 1) {
             $result = $conn->query("SELECT player_name, player_level, player_waffe, player_ruestung, player_atk, player_def FROM player WHERE account_id = '".$id."';");
-            if (!$result) {
-                die("MySQL-Fehler: ".$conn->error);
-            }
+            if (!$result) { die("MySQL-Fehler: ".$conn->error); }
             $row = $result->fetch_array(MYSQLI_BOTH);
             $_SESSION['player_name'] = $row[0];
             $_SESSION['player_level'] = $row[1];

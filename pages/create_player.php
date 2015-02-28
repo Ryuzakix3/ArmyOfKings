@@ -22,23 +22,35 @@
                 if (!isset($_SESSION['login'])) {
                     die("<div class=\"alert alert-danger\" role=\"alert\">Du musst dich für diesen Bereich zuerst Anmelden.</div></br>");
                 }
+                if (!empty($_POST['spieler_name'])) {
+                    $player_create = new player();
+                    if ($player_create->existsPlayerName($_POST['spieler_name'])) {
+                        echo("<div class=\"alert alert-danger\" role=\"alert\">Dieser Name ist bereits vergeben.</div></br>");
+                    }
+                    else {
+                        if ($player_create->createNewPlayer($_POST['spieler_name'])) {
+                            echo "<div class=\"alert alert-success\" role=\"alert\">Du hast erfolgreich einen Spieler erstellt. Du wirst in 3 Sekunden automatisch weitergeleitet.</div></br>";
+                            echo "<meta http-equiv=\"refresh\" content=\"3; URL=index.php?p=home\">";
+                            $loadFromDB = new Account;
+                            $loadFromDB->loadDatafromDB($_SESSION['user_id']);
+                        }
+                        else {
+                            echo "<div class=\"alert alert-danger\" role=\"alert\">Fehler beim Erstellen von deinem Spieler ! Bitte probier es noch einmal.</div></br>";
+                        }
+                    }
+                }
             ?>
             <div class="row">
                 <div class="col-lg-6">
-                    <div class="input-group">
-                        <input id="spieler_name" type="text" class="form-control" placeholder="Spieler Name">
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" onclick="onCreatePlayer()" type="button">Erstellen</button>
-                        </span>
-                    </div>
+                    <form action="index.php?p=create_player" method="post">
+                        <div class="input-group">
+                            <input id="spieler_name" name="spieler_name" type="text" class="form-control" placeholder="Spieler Name">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit">Erstellen</button>
+                            </span>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
 </div>
-
-<script type="text/javascript">
-    function onCreatePlayer() {
-        var name = $('#spieler_name').val();
-        window.location.href = window.location.href.replace( /[\?#].*|$/, "?player_name=" + name);
-    }
-</script>
