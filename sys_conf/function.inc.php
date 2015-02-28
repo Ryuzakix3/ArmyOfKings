@@ -103,12 +103,85 @@ class player {
 }
 
 class Account extends Player {
-    function login( $id, $pw ) {   
+    public $mysql_addr = "localhost";
+    public $mysql_user = "root";
+    public $mysql_password = "";
+    public $mysql_database = "homepage";
+    
+    function login( $benutzer_name, $pw ) {
+        if (!isset($_SESSION["login"])) {
+            $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+            if ($conn->connect_errno) {
+                die("MySQL-Fehler: ".$conn->connect_error);
+            }
+            $username = $conn->real_escape_string($benutzer_name);
+            $sql = "SELECT password, account_id FROM account WHERE username = '".$username."';";
+            $result = $conn->query($sql);
+            if (!$result) { die("MySQL-Fehler: ".$conn->error); }
+            $row = $result->fetch_array(MYSQL_NUM);
+            if (md5($pw) == $row[0]) {
+                $_SESSION['login'] = "True";
+                $_SESSION['user_id'] = $row[1];
+                return true;
+            }
+            else { echo "benis2"; return false; }
+        }
+        else { return false; }
     }
-    function isLogin( $id ) {   
+      
+    function logout() {
+        if (!empty($_SESSION['login'])) {
+            if ($_SESSION['login'] == "True") {
+                
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
     }
     
-    function loadDatafromDB( $id ) { 
+    function isLogin() {
+        if (!empty($_SESSION['login'])) {
+            if ($_SESSION['login'] == "True") { 
+                return true; 
+            }
+            else { 
+                return false; 
+            }
+        }
+        else {
+            return false;
+        }
+    }
+    
+    function loadDatafromDB( $id ) {
+        $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+        if ($conn->connect_errno) {
+            die("MySQL-Fehler: ".$conn->connect_error);
+        }
+        $id = $conn->real_escape_string($id);
+        $result = $conn->query("SELECT * FROM player WHERE account_id = '".$id."';");
+        if (($result->num_rows) == 1) {
+            $result = $conn->query("SELECT player_name, player_level, player_waffe, player_ruestung, player_atk, player_def FROM player WHERE account_id = '".$id."';");
+            if (!$result) {
+                die("MySQL-Fehler: ".$conn->error);
+            }
+            $row = $conn->fetch_array(MYSQLI_BOTH);
+            $_SESSION['player_name'] = $row[0];
+            $_SESSION['player_level'] = $row[1];
+            $_SESSION['player_weapon'] = $row[2];
+            $_SESSION['player_armor'] = $row[3];
+            $_SESSION['player_atk'] = $row[4];
+            $_SESSION['player_def'] = $row[5];
+            return true;
+        }
+        else { return false; }
+    }
+    
+    function saveToDB() {
     }
 }
 
