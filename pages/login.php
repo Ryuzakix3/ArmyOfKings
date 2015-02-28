@@ -5,7 +5,14 @@
     <li role="presentation"><a href="index.php?p=home">Startseite</a></li>
     <li role="presentation"><a href="index.php?p=create_player">Spieler Erstellen</a></li>
     <li role="presentation"><a href="index.php?p=delete_player">Spieler Löschen</a></li>
-    <li role="presentation" class="active"><a href="index.php?p=login">Einloggen</a></li>
+    <?php 
+        if (isset($_SESSION['login'])) { 
+            echo "<li role=\"presentation\"><a href=\"index.php?p=logout\">Ausloggen</a></li>"; 
+        }
+        else {
+            echo "<li role=\"presentation\" class=\"active\"><a href=\"index.php?p=login\">Einloggen</a></li>";
+        }
+    ?>
     <li role="presentation"><a href="index.php?p=register">Registrieren</a></li>
     <li role="presentation"><a href="index.php?p=inventar">Inventar</a></li>
     <li role="presentation"><a href="index.php?p=store">Laden</a></li>
@@ -16,12 +23,12 @@
         <div class="panel-heading">Login-Panel</div>
             <div class="panel-body">
                 <?php
+                    $_SESSION = array();
                     if (!empty($_POST["username"])) {
                         $login = new Account;
                         if ($login->login($_POST['username'], $_POST['password'])) {
-                            echo "<div class=\"alert alert-success\" role=\"alert\">Du hast dich erfolgreich eingeloggt.</div></br>";
-                            echo "<div class=\"alert alert-success\" role=\"alert\">Du wirst in 7 Sekunden automatisch weitergeleitet.</div></br>";
-                            echo "<meta http-equiv=\"refresh\" content=\"7; URL=index.php?p=home\">";
+                            echo "<div class=\"alert alert-success\" role=\"alert\">Du hast dich erfolgreich eingeloggt. Du wirst in 3 Sekunden automatisch weitergeleitet.</div></br>";
+                            echo "<meta http-equiv=\"refresh\" content=\"3; URL=index.php?p=home\">";
                             $login->loadDatafromDB($_SESSION['user_id']);
                         }
                         else {
