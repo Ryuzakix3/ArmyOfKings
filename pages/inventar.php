@@ -1,4 +1,9 @@
 <ul class="nav nav-tabs">
+    <?php
+        if (isset($_SESSION['login'])) {
+            echo "<p class=\"navbar-text navbar-right\">Angemeldet als ".$_SESSION['username']."</p>";
+        }
+    ?>
     <li role="presentation"><a href="index.php?p=home">Startseite</a></li>
     <li role="presentation"><a href="index.php?p=create_player">Spieler Erstellen</a></li>
     <li role="presentation"><a href="index.php?p=delete_player">Spieler Löschen</a></li>
@@ -18,20 +23,22 @@
 <div class="panel panel-default">
   <div class="panel-heading">Inventar</div>
         <div class="panel-body">
-            <?php
-                if (isset($_SESSION['login'])) {
-                    if (!empty($_SESSION['player_created'])) {
-                        $Inventar = new Inventar;
-                        $Inventar->getInventar("NULL", $_SESSION['player_inventar']);
-                    }
-                    else {
-                        echo "<div class=\"alert alert-danger\" role=\"alert\">Bitte erstelle zuerst einen Spieler.</div></br>";
-                    }
-                }
-                else {
-                    echo "<div class=\"alert alert-danger\" role=\"alert\">Dieser Bereich ist nur sichtbar wenn du eingeloggt bist.</div></br>";
-                }
-            ?>
+                <div class="col-xs-4">
+                    <?php
+                        if (isset($_SESSION['login'])) {
+                            if (!empty($_SESSION['player_created'])) {
+                                $Inventar = new Inventar;
+                                $Inventar->getInventar("NULL", $_SESSION['player_inventar']);
+                            }
+                            else {
+                                echo "<div class=\"alert alert-danger\" role=\"alert\">Bitte erstelle zuerst einen Spieler.</div></br>";
+                            }
+                        }
+                        else {
+                            echo "<div class=\"alert alert-danger\" role=\"alert\">Dieser Bereich ist nur sichtbar wenn du eingeloggt bist.</div></br>";
+                        }
+                    ?>
+                </div>
         </div>
 </div>
 

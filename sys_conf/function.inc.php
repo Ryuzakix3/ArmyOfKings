@@ -160,6 +160,7 @@ class Account extends Player {
             if (md5($pw) == $row[0]) {
                 $_SESSION['login'] = "True";
                 $_SESSION['user_id'] = $row[1];
+                $_SESSION['username'] = $username;
                 return true;
             }
             else { return false; }
@@ -195,6 +196,21 @@ class Account extends Player {
         }
     }
     
+    function deletePlayer() {
+        $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+        if ($conn->connect_errno) { 
+            die("MySQL-Fehler: ".$conn->connect_error); 
+        }
+        $sql = "DELETE FROM player WHERE account_id = '".$conn->real_escape_string($_SESSION['user_id'])."';";
+        $result = $conn->query($sql);
+        if (!$result) {
+            die("MySQL-Fehler: ".$conn->error);
+        }
+        else {
+            return true;
+        }
+    }
+    
     function loadDatafromDB( $id ) {
         $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
         if ($conn->connect_errno) { die("MySQL-Fehler: ".$conn->connect_error); }
@@ -221,12 +237,17 @@ class Account extends Player {
         $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
         if ($conn->connect_errno) { die("MySQL-Fehler: ".$conn->connect_error); }
         if (isset($_SESSION['login'])) {
-            $sql = "UPDATE player SET player_name = '".$_SESSION['player_name']."', player_level = '".$_SESSION['player_level']."', player_waffe = '".$_SESSION['player_weapon']."', player_ruestung = '".$_SESSION['player_armor']."', player_atk = '".$_SESSION['player_atk']."', player_def = '".$_SESSION['player_def']."' WHERE account_id = '".$_SESSION['user_id']."';";
-            $result = $conn->query($sql);
-            if (!$result) {
-                die("MySQL-Fehler: ".$conn->error);
+            if (isset($_SESSION['player_name']) && isset($_SESSION['player_level'])) {
+                $sql = "UPDATE player SET player_name = '".$_SESSION['player_name']."', player_level = '".$_SESSION['player_level']."', player_waffe = '".$_SESSION['player_weapon']."', player_ruestung = '".$_SESSION['player_armor']."', player_atk = '".$_SESSION['player_atk']."', player_def = '".$_SESSION['player_def']."' WHERE account_id = '".$_SESSION['user_id']."';";
+                $result = $conn->query($sql);
+                if (!$result) {
+                    die("MySQL-Fehler: ".$conn->error);
+                }
+                else if ($result) {
+                    return true;
+                }
             }
-            else if ($result) {
+            else {
                 return true;
             }
         }
@@ -251,9 +272,9 @@ class Inventar extends player {
     function getInventar( $index, $array ) {
         if ($index == "NULL") {
             $i = 0;
-            echo "<ul></br>";
+            echo "<ul class=\"list-group\"></br>";
             while ($i <= (count($array) -1)) {
-                echo "<li>".$array[$i]."</li>";
+                echo "<li class=\"list-group-item\">".$array[$i]."</li>";
                 $i++;
             }
             echo "</ul></br>";

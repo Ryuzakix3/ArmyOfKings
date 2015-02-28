@@ -16,7 +16,7 @@
 </ul>
 
 <div class="panel panel-default">
-    <div class="panel-heading">Startseite</div>
+    <div class="panel-heading">Logout</div>
         <div class="panel-body">
             <?php
                 if (isset($_SESSION['login'])) {

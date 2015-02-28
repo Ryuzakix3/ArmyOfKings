@@ -1,4 +1,9 @@
 <ul class="nav nav-tabs">
+    <?php
+        if (isset($_SESSION['login'])) {
+            echo "<p class=\"navbar-text navbar-right\">Angemeldet als ".$_SESSION['username']."</p>";
+        }
+    ?>
     <li role="presentation"><a href="index.php?p=home">Startseite</a></li>
     <li role="presentation" class="active"><a href="index.php?p=create_player">Spieler Erstellen</a></li>
     <li role="presentation"><a href="index.php?p=delete_player">Spieler Löschen</a></li>
