@@ -1,14 +1,16 @@
 <ul class="nav nav-tabs">
     <?php
-        if (isset($_SESSION['login'])) {
+        $login = new Account;
+        if ($login->isLogin()) {
             echo "<p class=\"navbar-text navbar-right\">Angemeldet als ".$_SESSION['username']."</p>";
         }
     ?>
     <li role="presentation"><a href="index.php?p=home">Startseite</a></li>
     <li role="presentation"><a href="index.php?p=create_player">Spieler Erstellen</a></li>
     <li role="presentation"><a href="index.php?p=delete_player">Spieler Löschen</a></li>
+    <li role="presentation"><a href="index.php?p=mailbox">Postfach</a></li>
      <?php 
-        if (isset($_SESSION['login'])) { 
+        if ($login->isLogin()) { 
             echo "<li role=\"presentation\"><a href=\"index.php?p=logout\">Ausloggen</a></li>"; 
         }
         else {
@@ -23,9 +25,9 @@
 <div class="panel panel-default">
   <div class="panel-heading">Inventar</div>
         <div class="panel-body">
-                <div class="col-xs-4">
+                <div class="col-xs-12">
                     <?php
-                        if (isset($_SESSION['login'])) {
+                        if ($login->isLogin()) {
                             if (!empty($_SESSION['player_created'])) {
                                 $Inventar = new Inventar;
                                 $Inventar->getInventar("NULL", $_SESSION['player_inventar']);

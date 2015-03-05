@@ -5,6 +5,7 @@
     <li role="presentation"><a href="index.php?p=home">Startseite</a></li>
     <li role="presentation"><a href="index.php?p=create_player">Spieler Erstellen</a></li>
     <li role="presentation"><a href="index.php?p=delete_player">Spieler Löschen</a></li>
+    <li role="presentation"><a href="index.php?p=mailbox">Postfach</a></li>
     <?php 
         if (isset($_SESSION['login'])) { 
             echo "<li role=\"presentation\"><a href=\"index.php?p=logout\">Ausloggen</a></li>"; 
@@ -37,14 +38,14 @@
                     }
                 ?>
                 <form action="index.php?p=login" method="post">
-                    <div class="col-xs-4">
+                    <div class="col-xs-5">
                         <div class="input-group">
-                            <span class="input-group-addon" id="einfaches-addon1">E-Mail:</span>
+                            <span class="input-group-addon" id="einfaches-addon1">Benutzername:</span>
                          <input type="text" name="username" class="form-control" placeholder="Benutzername" aria-describedby="einfaches-addon1">
                         </div>
                     </div>
 
-                    <div class="col-xs-4">
+                    <div class="col-xs-5">
                         <div class="input-group">
                             <span class="input-group-addon" id="einfaches-addon1">Passwort:</span>
                             <input type="password" name="password" class="form-control" placeholder="Passwort" aria-describedby="einfaches-addon1">

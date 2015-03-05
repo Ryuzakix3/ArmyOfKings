@@ -1,6 +1,48 @@
 <?php
 include './sys_conf/config.inc.php';
 
+class Messenger {
+    public $mysql_addr = "localhost";
+    public $mysql_user = "root";
+    public $mysql_password = "";
+    public $mysql_database = "homepage";
+    
+    function getAllMessages() {
+        $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+        if ($conn->connect_errno) {
+            die("MySQL-Fehler: ".$conn->error);
+        }
+        $sql = "SELECT id,empf,no_read,message,absender,betreff FROM Message WHERE empf = '".$conn->real_escape_string($_SESSION['username'])."' and no_read = '1';";
+        $result = $conn->query($sql);
+        if (!$result) {
+            die("MySQL-Fehler: ".$conn->error);
+        }
+        if ($result->num_rows() > 0) {
+            $row = $result->fetch_array(MYSQLI_BOTH);
+            echo "";
+            echo "";
+        }
+        else {
+            return false;
+        }
+    }
+    
+    function print_msg($id, $betreff, $message) {
+        echo "<a href=\"index.php?p=message?id=".$id."\" class=\"list-group-item active\">";
+        echo "<h4 class=\"list-group-item-heading\>".$betreff."</h4>";
+        echo "<p class=\"list-group-item-text\"></p>";
+        echo "</a>";
+    }
+    
+    function getMessage( $index ) {
+        
+    }
+    
+    function sendMessage ( $msg, $empf ) {
+        
+    }
+}
+
 class player {
     public $mysql_addr = "localhost";
     public $mysql_user = "root";
@@ -93,16 +135,33 @@ class player {
     
     function setDef( $new_def ) {
         $this->DEF = $new_def;
+        $_SESSION['player_def'] = $new_def;
     }
     
     function getRuestung() {
         return $this->Ruestung;
     }
     
-    function setuesstung( $new_ruesstung ) {
-        $this->Ruestung = $new_ruesstung;
+    function setuesstung( $new_ruestung ) {
+        $this->Ruestung = $new_ruestung;
+        $_SESSION['player_armor'] = $new_ruestung;
     }
     // 
+    function hasAlreadyPlayer() {
+        $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+        if ($conn->connect_errno) {
+            die("MySQL-Fehler: ".$conn->connect_error);
+        }
+        $sql = "SELECT * FROM player WHERE account_id = '".$conn->real_escape_string($_SESSION['user_id'])."';";
+        $result = $conn->query($sql);
+        if ($result->num_rows >= 1) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
     function existsPlayerName( $name ) { 
         $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
         if ($conn->connect_errno) {
@@ -166,6 +225,29 @@ class Account extends Player {
             else { return false; }
         }
         else { return false; }
+    }
+    
+    function comparePassword( $password_2 ) {
+        $secure_password_2 = md5($password_2);
+        $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+        if ($conn->connect_errno) {
+            die("MySQL-Fehler: ".$conn->connect_error);
+        }
+        $sql = "SELECT password FROM account WHERE account_id = '".$conn->real_escape_string($_SESSION['user_id'])."' LIMIT 1;";
+        $result = $conn->query($sql);
+        $row = $result->fetch_array(MYSQLI_ASSOC);
+        if ($result->num_rows == 1) {
+            if ($secure_password_2 == $row['password']) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+        
     }
       
     function logout() {
@@ -269,26 +351,18 @@ class Erfahrung extends player {
 }
 
 class Inventar extends player {
-    function getInventar( $index, $array ) {
-        if ($index == "NULL") {
-            $i = 0;
-            echo "<ul class=\"list-group\"></br>";
-            while ($i <= (count($array) -1)) {
-                echo "<li class=\"list-group-item\">".$array[$i]."</li>";
-                $i++;
-            }
-            echo "</ul></br>";
-        }
-    }
+    public $is_loaded = "false";
     
-    function setItemToInventar( $itemname, $index ) {
-        if (!empty($index)) {
-            $this->Inventar[$index] = $itemname;
-        }
-        else {
-            $this->Inventar[(count($this->Inventar) + 1)] = $itemname; 
-        }
-    }    
+    function loadFromDB() {
+        
+    }  
+    
+    function isLoaded() {
+        
+    }
+    function getInventar() {
+        
+    }
 }
 
 class Monster extends player {

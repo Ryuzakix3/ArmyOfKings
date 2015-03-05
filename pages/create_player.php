@@ -1,14 +1,16 @@
 <ul class="nav nav-tabs">
     <?php
-        if (isset($_SESSION['login'])) {
+        $login = new Account;
+        if ($login->isLogin()) {
             echo "<p class=\"navbar-text navbar-right\">Angemeldet als ".$_SESSION['username']."</p>";
         }
     ?>
     <li role="presentation"><a href="index.php?p=home">Startseite</a></li>
     <li role="presentation" class="active"><a href="index.php?p=create_player">Spieler Erstellen</a></li>
     <li role="presentation"><a href="index.php?p=delete_player">Spieler Löschen</a></li>
+    <li role="presentation"><a href="index.php?p=mailbox">Postfach</a></li>
     <?php 
-        if (isset($_SESSION['login'])) { 
+        if ($login->isLogin()) { 
             echo "<li role=\"presentation\"><a href=\"index.php?p=logout\">Ausloggen</a></li>"; 
         }
         else {
@@ -24,23 +26,28 @@
   <div class="panel-heading">Spieler Erstellen</div>
         <div class="panel-body">
              <?php 
-                if (!isset($_SESSION['login'])) {
+                if (!$login->isLogin()) {
                     die("<div class=\"alert alert-danger\" role=\"alert\">Du musst dich für diesen Bereich zuerst Anmelden.</div></br>");
                 }
                 if (!empty($_POST['spieler_name'])) {
                     $player_create = new player();
-                    if ($player_create->existsPlayerName($_POST['spieler_name'])) {
-                        echo("<div class=\"alert alert-danger\" role=\"alert\">Dieser Name ist bereits vergeben.</div></br>");
+                    if ($player_create->hasAlreadyPlayer()) {
+                        echo("<div class=\"alert alert-danger\" role=\"alert\">Du hast bereits einen Spieler.</div></br>");
                     }
                     else {
-                        if ($player_create->createNewPlayer($_POST['spieler_name'])) {
-                            echo "<div class=\"alert alert-success\" role=\"alert\">Du hast erfolgreich einen Spieler erstellt. Du wirst in 3 Sekunden automatisch weitergeleitet.</div></br>";
-                            echo "<meta http-equiv=\"refresh\" content=\"3; URL=index.php?p=home\">";
-                            $loadFromDB = new Account;
-                            $loadFromDB->loadDatafromDB($_SESSION['user_id']);
+                        if ($player_create->existsPlayerName($_POST['spieler_name'])) {
+                            echo("<div class=\"alert alert-danger\" role=\"alert\">Dieser Name ist bereits vergeben.</div></br>");
                         }
                         else {
-                            echo "<div class=\"alert alert-danger\" role=\"alert\">Fehler beim Erstellen von deinem Spieler ! Bitte probier es noch einmal.</div></br>";
+                            if ($player_create->createNewPlayer($_POST['spieler_name'])) {
+                                echo "<div class=\"alert alert-success\" role=\"alert\">Du hast erfolgreich einen Spieler erstellt. Du wirst in 3 Sekunden automatisch weitergeleitet.</div></br>";
+                                echo "<meta http-equiv=\"refresh\" content=\"3; URL=index.php?p=home\">";
+                                $loadFromDB = new Account;
+                                $loadFromDB->loadDatafromDB($_SESSION['user_id']);
+                            }
+                            else {
+                                echo "<div class=\"alert alert-danger\" role=\"alert\">Fehler beim Erstellen von deinem Spieler ! Bitte probier es noch einmal.</div></br>";
+                            }
                         }
                     }
                 }
