@@ -26,7 +26,6 @@
   <div class="panel-heading">Spieler Löschen</div>
         <div class="panel-body">
                 <?php
-                    print_r($_POST['user_pwd'] || $s = array("0", "1", "3"));
                     if ($account_handler->isLogin()) {
                         if (!empty($_POST['user_pwd'])) {
                            if ($account_handler->comparePassword($_POST['user_pwd'])) {
