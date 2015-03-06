@@ -216,7 +216,7 @@ class Account extends Player {
             $result = $conn->query($sql);
             if (!$result) { die("MySQL-Fehler: ".$conn->error); }
             $row = $result->fetch_array(MYSQL_NUM);
-            if (md5($pw) == $row[0]) {
+            if (hash("sha256",$pw) == $row[0]) {
                 $_SESSION['login'] = "True";
                 $_SESSION['user_id'] = $row[1];
                 $_SESSION['username'] = $username;
@@ -228,7 +228,7 @@ class Account extends Player {
     }
     
     function comparePassword( $password_2 ) {
-        $secure_password_2 = md5($password_2);
+        $secure_password_2 = hash("sha256", $password_2);
         $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
         if ($conn->connect_errno) {
             die("MySQL-Fehler: ".$conn->connect_error);

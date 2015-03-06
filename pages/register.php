@@ -28,23 +28,26 @@
                 <div class="col-xs-4">
                 </div>
                 <div class="col-xs-4">
-                    <div class="input-group">
-                        <span class="glyphicon glyphicon-user" aria-hidden="true">Benutzername:</span>
-                        <input type="text" class="form-control" placeholder="" aria-describedby="einfaches-addon1">
-                    </div>
-                    <div class="input-group">
-                        <span class="glyphicon glyphicon-asterisk" aria-hidden="true">Passwort:</span>
-                        <input type="text" class="form-control" placeholder="" aria-describedby="einfaches-addon1">
-                    </div>
-                    <div class="input-group">
-                        <span class="glyphicon glyphicon-asterisk" aria-hidden="true">Passwort:</span>
-                        <input type="text" class="form-control" placeholder="" aria-describedby="einfaches-addon1">
-                    </div>
-                    <div class="input-group">
-                        <span class="glyphicon glyphicon-envelope" aria-hidden="true">E-Mail:</span>
-                        <input type="text" class="form-control" placeholder="" aria-describedby="einfaches-addon1">
-                    </div>
-
+                    <form role="form" data-toggle="validator">
+                        <div class="input-group">
+                            <span class="glyphicon glyphicon-user" aria-hidden="true">Benutzername:</span>
+                            <input type="text" class="form-control" placeholder="" aria-describedby="einfaches-addon1">
+                        </div>
+                        <div class="input-group">
+                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true">Passwort:</span>
+                            <input type="password" data-minlength="6" class="form-control" placeholder="" aria-describedby="einfaches-addon1">
+                            <span class="help-block">Minimum 6 characters</span>
+                        </div>
+                        <div class="input-group">
+                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true">Passwort:</span>
+                            <input type="password" data-minlength="6" class="form-control" placeholder="" aria-describedby="einfaches-addon1">
+                            <span class="help-block">Minimum 6 characters</span>
+                        </div>
+                        <div class="input-group">
+                            <span class="glyphicon glyphicon-envelope" aria-hidden="true">E-Mail:</span>
+                            <input type="email" class="form-control" placeholder="" aria-describedby="einfaches-addon1">
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
