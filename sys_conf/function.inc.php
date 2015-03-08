@@ -205,6 +205,120 @@ class Account extends Player {
     public $mysql_password = "";
     public $mysql_database = "homepage";
     
+    public $username = "";
+    public $password = "";
+    public $password_sha256 = "";
+    public $email = "";
+    
+    public $password_error = "";
+    public $username_error = "";
+    
+    function isUsernameFree() {
+        if (!empty($this->username)) {
+            $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+            if ($conn->connect_errno) {
+                die("MySQL-Fehler: ".$conn->error);
+            }
+            $sql = "SELECT * FROM account WHERE username = '".$conn->real_escape_string($this->username)."';";
+            $result = $conn->query($sql);
+            if (!$result) {
+                die("MySQL-Fehler: ".$conn->error);
+            }
+            if ($result->num_rows == 1) {
+                $this->username_error = "Dieser Benutzername ist bereits vergeben.";
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    }
+    
+    function getUsernameError() {
+        if (!empty($this->username_error)) {
+            return $this->username_error;
+        }
+    }
+    
+    function getPasswordError() {
+        if (!empty($this->password_error)) {
+            return $this->password_error;
+        }
+    }
+    
+    function isPasswordSafty() {
+        if (!empty($this->password)) {
+            $pwd = $this->password;
+            if( strlen($pwd) < 6 ) { // Password to Short .
+                $this->password_error = "Dein Passwort ist zu Kurz.";
+                return false;
+            }
+            else if( strlen($pwd) > 25 ) { // Password to Long.
+                $this->password_error = "Dein Password ist zu lang.";
+                return false;
+            }
+            else if( !preg_match("#[0-9]+#", $pwd) ) { // Password must include one number.
+                $this->password_error = "Dein Password muss mindestens eine Zahl beinhalten.";
+                return false;
+            }
+            else if( !preg_match("#[a-z]+#", $pwd) ) { // Password must include one Letter.
+                $this->password_error = "Dein Password muss mindestens einen Buchstaben beinhalten.";
+                return false;
+            }
+            else if( !preg_match("#[A-Z]+#", $pwd) ) { // Password must include one CAPS.
+                $this->password_error = "Dein Password muss einen Groß Buchstaben beinhalten.";
+                return false;
+            }
+            else { return true;}
+        }
+    }
+    
+    function setUsername( $username ) {
+        if (!empty($username)) {
+            $this->username = $username;
+        }
+    }
+    
+    function setPassword( $password ) {
+        if (!empty($password)) {
+            $this->password = $password;
+        }
+        
+    }
+    
+    function setEmail( $mail ) {
+        if (!empty($mail)) {
+            $this->email = $mail;
+        }
+        
+    }
+    
+    function hashPassword() {
+        if (!empty($this->password)) {
+            $this->password_sha256 = hash("sha256", $this->password);
+            return true;
+        }
+        else {
+            return false;
+        }
+        
+    }
+    
+    function createNewAccount() {
+        $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+        if ($conn->connect_errno) {
+            die("MySQL-Fehler: ".$conn->connect_error);
+        }
+        $sql = "INSERT INTO account (account_id, username, password, email) VALUES ('', '".$conn->real_escape_string($this->username)."', '".$this->password_sha256."', '".$conn->real_escape_string($this->email)."');";
+        $result = $conn->query($sql);
+        if (!$result) {
+            die("MySQL-Fehler: ".$conn->error);
+        }
+        else {
+            return true;
+        }
+    }
+    
     function login( $benutzer_name, $pw ) {
         if (!isset($_SESSION["login"])) {
             $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
@@ -216,7 +330,8 @@ class Account extends Player {
             $result = $conn->query($sql);
             if (!$result) { die("MySQL-Fehler: ".$conn->error); }
             $row = $result->fetch_array(MYSQL_NUM);
-            if (hash("sha256",$pw) == $row[0]) {
+            $pw_secure = hash("sha256", $pw);
+            if ($pw_secure == $row[0]) {
                 $_SESSION['login'] = "True";
                 $_SESSION['user_id'] = $row[1];
                 $_SESSION['username'] = $username;

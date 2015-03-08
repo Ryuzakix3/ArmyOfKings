@@ -41,19 +41,19 @@
                     <div class="col-xs-5">
                         <div class="input-group">
                             <span class="input-group-addon" id="einfaches-addon1">Benutzername:</span>
-                         <input type="text" name="username" class="form-control" placeholder="Benutzername" aria-describedby="einfaches-addon1">
+                            <input id="username" type="text" name="username" class="form-control" placeholder="Benutzername" aria-describedby="einfaches-addon1">
                         </div>
                     </div>
 
                     <div class="col-xs-5">
                         <div class="input-group">
                             <span class="input-group-addon" id="einfaches-addon1">Passwort:</span>
-                            <input type="password" name="password" class="form-control" placeholder="Passwort" aria-describedby="einfaches-addon1">
+                            <input id="password" type="password" name="password" class="form-control" placeholder="Passwort" aria-describedby="einfaches-addon1">
                         </div>
                      </div>
                     <div class="col-xs-2">
                         <div class="btn-group">
-                            <button type="submit" class="btn btn-danger">Einloggen</button>
+                            <button id="login_button" type="submit" class="btn btn-danger">Einloggen</button>
                             <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                 <span class="caret"></span>
                                 <span class="sr-only">Menü ein-/ausblenden</span>
@@ -66,11 +66,9 @@
                         </div>
                     </div>
                 </form>
+               
             </div>
    </div>
 </div>
-
-<script type="text/javascript">
-</script>
 
 

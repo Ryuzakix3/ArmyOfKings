@@ -25,28 +25,65 @@
   <div class="panel-heading">Registrieren</div>
         <div class="panel-body">
             <div class="row">
-                <div class="col-xs-4">
+                <div class="col-xs-12">
+                     <?php
+                        if ($login->isLogin()) {
+                            echo "<div class=\"alert alert-warning\" role=\"alert\">Um einen Account zu erstellen musst du ausgeloggt sein.</div>";
+                        }
+                        if (!empty($_POST['username'])) {
+                            $create = new Account();
+                            $create->setUsername($_POST['username']);
+                            if ($create->isUsernameFree()) {
+                                if (isset($_POST['password'])) {
+                                    $create->setPassword($_POST['password']);
+                                    if ($create->isPasswordSafty()) {
+                                        if ($create->hashPassword()) {
+                                            if (isset($_POST['email'])) {
+                                                $create->setEmail($_POST['email']);
+                                                if ($create->createNewAccount()) {
+                                                    echo "<div class=\"alert alert-success\" role=\"alert\">Du hast erfolgreich deinen Account erstellt. Du wirst in 3 Sekunden zur Login seite weitergeleitet.</div></br>";
+                                                    echo "<meta http-equiv=\"refresh\" content=\"3; URL=index.php?p=login\">";
+                                                }
+                                            }
+                                        }
+                                        else {
+                                            echo("<div class=\"alert alert-danger\" role=\"alert\">Fehler beim Hashen des Passworts !</div></br>");
+                                        }
+                                    }
+                                    else {
+                                        echo("<div class=\"alert alert-danger\" role=\"alert\">".$create->getPasswordError()."</div></br>");
+                                    }
+                                } 
+                            }
+                            else {
+                                echo("<div class=\"alert alert-danger\" role=\"alert\">".$create->getUsernameError()."</div></br>");
+                            }
+                        }
+                    ?>
                 </div>
-                <div class="col-xs-4">
-                    <form role="form" data-toggle="validator">
+                <div class="col-xs-12">
+                    <form action="index.php?p=register" method="post">
                         <div class="input-group">
                             <span class="glyphicon glyphicon-user" aria-hidden="true">Benutzername:</span>
-                            <input type="text" class="form-control" placeholder="" aria-describedby="einfaches-addon1">
+                            <input name="username" type="text" class="form-control" placeholder="" aria-describedby="einfaches-addon1" required>
+                            <span class="help-block">Minimum 3 characters</span>
                         </div>
                         <div class="input-group">
                             <span class="glyphicon glyphicon-asterisk" aria-hidden="true">Passwort:</span>
-                            <input type="password" data-minlength="6" class="form-control" placeholder="" aria-describedby="einfaches-addon1">
+                            <input name="password" type="password" data-minlength="6" class="form-control" placeholder="" aria-describedby="einfaches-addon1" required>
                             <span class="help-block">Minimum 6 characters</span>
                         </div>
                         <div class="input-group">
                             <span class="glyphicon glyphicon-asterisk" aria-hidden="true">Passwort:</span>
-                            <input type="password" data-minlength="6" class="form-control" placeholder="" aria-describedby="einfaches-addon1">
+                            <input type="password" data-minlength="6" class="form-control" placeholder="" aria-describedby="einfaches-addon1" required>
                             <span class="help-block">Minimum 6 characters</span>
                         </div>
                         <div class="input-group">
                             <span class="glyphicon glyphicon-envelope" aria-hidden="true">E-Mail:</span>
-                            <input type="email" class="form-control" placeholder="" aria-describedby="einfaches-addon1">
+                            <input name="email" type="email" class="form-control" placeholder="" aria-describedby="einfaches-addon1" required>
+                            <span class="help-block">Use a valid Email</span>
                         </div>
+                        <button class="btn btn-default" type="submit">Registrieren</button>
                     </form>
                 </div>
             </div>

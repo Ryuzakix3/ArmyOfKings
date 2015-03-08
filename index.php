@@ -15,7 +15,7 @@ and open the template in the editor.
     <head>
         <meta charset="UTF-8">
         <title><?php echo $site_settings['site_title']; ?></title>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <div class="page-header">
             <center>
@@ -25,7 +25,6 @@ and open the template in the editor.
     </head>
     <body>
         <div class="container">
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
             <?php
                 if (!empty($_GET['p'])) {
                     if (file_exists("./pages/".$_GET['p'].".php")) {
