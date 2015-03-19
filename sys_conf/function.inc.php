@@ -1,53 +1,63 @@
 <?php
 include './sys_conf/config.inc.php';
 
-class Messenger {
+class Database {
+    // DB SETTINGS //
     public $mysql_addr = "localhost";
     public $mysql_user = "root";
-    public $mysql_password = "";
+    public $mysql_password = "9002052863000";
     public $mysql_database = "homepage";
-    
-    function getAllMessages() {
-        $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
-        if ($conn->connect_errno) {
-            die("MySQL-Fehler: ".$conn->error);
-        }
-        $sql = "SELECT id,empf,no_read,message,absender,betreff FROM Message WHERE empf = '".$conn->real_escape_string($_SESSION['username'])."' and no_read = '1';";
-        $result = $conn->query($sql);
-        if (!$result) {
-            die("MySQL-Fehler: ".$conn->error);
-        }
-        if ($result->num_rows() > 0) {
-            $row = $result->fetch_array(MYSQLI_BOTH);
-            echo "";
-            echo "";
-        }
-        else {
-            return false;
-        }
-    }
-    
-    function print_msg($id, $betreff, $message) {
-        echo "<a href=\"index.php?p=message?id=".$id."\" class=\"list-group-item active\">";
-        echo "<h4 class=\"list-group-item-heading\>".$betreff."</h4>";
-        echo "<p class=\"list-group-item-text\"></p>";
-        echo "</a>";
-    }
-    
-    function getMessage( $index ) {
-        
-    }
-    
-    function sendMessage ( $msg, $empf ) {
-        
-    }
+    // DB SETTINGS //
 }
 
-class player {
-    public $mysql_addr = "localhost";
-    public $mysql_user = "root";
-    public $mysql_password = "";
-    public $mysql_database = "homepage";
+class Messenger extends Account {
+    public $absender = "";
+    public $empfaenger = "";
+    public $betreff = "";
+    public $message = "";
+    
+    function getMessageCount() {
+        $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+        if ($conn->connect_errno) {
+            die("MySQL-Fehler: ".$conn->connect_error);
+        }
+        $query = "SELECT COUNT(*) FROM message WHERE empf = '".$conn->real_escape_string($_SESSION['username'])."';";
+        $result = $conn->query($query);
+        if (!$result) {
+            die("MySQL-Fehler: ".$conn->connect_error);
+        }
+        $row = $result->fetch_array(MYSQLI_NUM);
+        return $row[0];
+        
+    }
+    
+    function getNewMessage() {
+        
+    }
+    
+    function readNewMessage( $id ) {
+        
+    }
+    
+    function setAbsender( $absender ) {
+        
+    }
+    
+    function setEmpfaenger( $empf ) {
+        
+    }
+    
+    function setMessage( $msg ) {
+        
+    }
+    
+    function sendNewMessage() {
+        
+    }
+    
+}
+
+class player extends Database{
     public $playername = "";
     public $Level = "";
     public $playerep = "0";
@@ -58,9 +68,18 @@ class player {
     public $TP = "0";
     public $Waffe = "";
     public $Ruestung = "";
+    public $gold = "0";
     public $Inventar = array();
     
     // PLAYER FUNCTIONS //
+    function setGold( $new_gold ) {
+        $this->gold = $new_gold;
+    }
+    
+    function getGold() {
+        return $this->gold;
+    }
+    
     function setTP( $new_tp ) {
         $this->TP = $new_tp;
     }
@@ -187,7 +206,7 @@ class player {
             die("MySQL-Fehler: ".$conn->connect_error);
         }
         $new_name = $conn->real_escape_string($player_name);
-        $sql = "INSERT INTO player (account_id, player_name, player_level, player_waffe, player_ruestung, player_atk, player_def) VALUES ('".$conn->real_escape_string($_SESSION['user_id'])."', '".$new_name."', '1', 'Holzschwert', 'Holz-Hemd', '15', '10');";
+        $sql = "INSERT INTO player (account_id, player_name, player_level, player_waffe, player_ruestung, player_atk, player_def, gold) VALUES ('".$conn->real_escape_string($_SESSION['user_id'])."', '".$new_name."', '1', 'Holzschwert', 'Holz-Hemd', '15', '10', 0);";
         $result = $conn->query($sql);
         if (!$result) {
             die("MySQL-Fehler: ".$conn->error);
@@ -200,15 +219,12 @@ class player {
 }
 
 class Account extends Player {
-    public $mysql_addr = "localhost";
-    public $mysql_user = "root";
-    public $mysql_password = "";
-    public $mysql_database = "homepage";
-    
     public $username = "";
     public $password = "";
     public $password_sha256 = "";
+    public $activate_hash = "";
     public $email = "";
+    public $actived = "1";
     
     public $password_error = "";
     public $username_error = "";
@@ -234,6 +250,55 @@ class Account extends Player {
         }
     }
     
+    function setActivateHash() {
+        if (isset($this->username)) {
+            $this->activate_hash = hash("sha256", $this->username);
+            $this->actived = "0";
+        }
+    }
+    
+    function sendEMail() {
+        if (isset($this->activate_hash) && isset($this->email)) {
+            $to      = $this->email;
+            $subject = 'Account Activation';
+            $message = 'https://37.228.134.62:8880/index.php?activated='.$this->activate_hash;
+            $headers = 'From: noreply@armyofkings.com' . "\r\n" .
+                       'Reply-To: noreply@armyofkings.com' . "\r\n" .
+                       'X-Mailer: PHP/' . phpversion();
+
+            mail($to, $subject, $message, $headers);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    function activateAccount( $hash ) {
+        if (isset($hash)) {
+            $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+            if ($conn->connect_errno) {
+                die("MySQL-Fehler0: ".$conn->error);
+            }
+            $sql = "SELECT activatehash, activated FROM account WHERE activatehash = '".$conn->real_escape_string($hash)."';";
+            $result = $conn->query($sql);
+            if (!$result) {
+                die('MySQL-Fehler1: '.$conn->error);
+            }
+            $row = $result->fetch_array(MYSQLI_NUM);
+            if ($row[1] == '0' && $row[0] == $hash) {
+                $sql = "UPDATE account SET activated = '1' WHERE activatehash = '".$conn->real_escape_string($hash)."';";
+                $result = $conn->query($sql);
+                if (!$result) {
+                    die("MySQL-Fehler2: ".$conn->error);
+                }
+                else {
+                    return true;
+                }
+            }
+        }
+    }
+    
     function getUsernameError() {
         if (!empty($this->username_error)) {
             return $this->username_error;
@@ -248,28 +313,31 @@ class Account extends Player {
     
     function isPasswordSafty() {
         if (!empty($this->password)) {
-            $pwd = $this->password;
-            if( strlen($pwd) < 6 ) { // Password to Short .
+            if( strlen($this->password) < 6 ) { // Password to Short .
                 $this->password_error = "Dein Passwort ist zu Kurz.";
                 return false;
             }
-            else if( strlen($pwd) > 25 ) { // Password to Long.
+            else if( strlen($this->password) > 25 ) { // Password to Long.
                 $this->password_error = "Dein Password ist zu lang.";
                 return false;
             }
-            else if( !preg_match("#[0-9]+#", $pwd) ) { // Password must include one number.
+            else if( !preg_match("#[0-9]+#", $this->password) ) { // Password must include one number.
                 $this->password_error = "Dein Password muss mindestens eine Zahl beinhalten.";
                 return false;
             }
-            else if( !preg_match("#[a-z]+#", $pwd) ) { // Password must include one Letter.
+            else if( !preg_match("#[a-z]+#", $this->password) ) { // Password must include one Letter.
                 $this->password_error = "Dein Password muss mindestens einen Buchstaben beinhalten.";
                 return false;
             }
-            else if( !preg_match("#[A-Z]+#", $pwd) ) { // Password must include one CAPS.
+            else if( !preg_match("#[A-Z]+#", $this->password) ) { // Password must include one CAPS.
                 $this->password_error = "Dein Password muss einen Groß Buchstaben beinhalten.";
                 return false;
             }
             else { return true;}
+        }
+        else {
+            $this->password_error = "Du hast kein Passwort eingeben !";
+            return false;
         }
     }
     
@@ -309,7 +377,7 @@ class Account extends Player {
         if ($conn->connect_errno) {
             die("MySQL-Fehler: ".$conn->connect_error);
         }
-        $sql = "INSERT INTO account (account_id, username, password, email) VALUES ('', '".$conn->real_escape_string($this->username)."', '".$this->password_sha256."', '".$conn->real_escape_string($this->email)."');";
+        $sql = "INSERT INTO account (account_id, username, password, email, activatehash, activated) VALUES ('', '".$conn->real_escape_string($this->username)."', '".$this->password_sha256."', '".$conn->real_escape_string($this->email)."', '".$this->activate_hash."', '".$this->actived."');";
         $result = $conn->query($sql);
         if (!$result) {
             die("MySQL-Fehler: ".$conn->error);
@@ -326,16 +394,23 @@ class Account extends Player {
                 die("MySQL-Fehler: ".$conn->connect_error);
             }
             $username = $conn->real_escape_string($benutzer_name);
-            $sql = "SELECT password, account_id FROM account WHERE username = '".$username."';";
+            $sql = "SELECT password, account_id, activated FROM account WHERE username = '".$username."';";
             $result = $conn->query($sql);
             if (!$result) { die("MySQL-Fehler: ".$conn->error); }
             $row = $result->fetch_array(MYSQL_NUM);
             $pw_secure = hash("sha256", $pw);
             if ($pw_secure == $row[0]) {
-                $_SESSION['login'] = "True";
-                $_SESSION['user_id'] = $row[1];
-                $_SESSION['username'] = $username;
-                return true;
+                if ($row[2] == "1") {
+                    $_SESSION['login'] = "True";
+                    $_SESSION['user_id'] = $row[1];
+                    $_SESSION['username'] = $username;
+                    $postfach_in = new Messenger();
+                    $_SESSION['unread_msg'] = $postfach_in->getMessageCount();
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
             else { return false; }
         }
@@ -404,6 +479,15 @@ class Account extends Player {
             die("MySQL-Fehler: ".$conn->error);
         }
         else {
+            $_SESSION['player_name'] = "";
+            $_SESSION['player_level'] = "";
+            $_SESSION['player_weapon'] = "";
+            $_SESSION['player_armor'] = "";
+            $_SESSION['player_atk'] = "";
+            $_SESSION['player_def'] = "";
+            $_SESSION['player_gold'] = "";
+            $_SESSION['player_inventar'] = array();
+            $_SESSION['player_created'] = "";
             return true;
         }
     }
@@ -414,7 +498,7 @@ class Account extends Player {
         $id_new = $conn->real_escape_string($id);
         $result = $conn->query("SELECT * FROM player WHERE account_id = '".$id_new."';");
         if ($result->num_rows == 1) {
-            $result = $conn->query("SELECT player_name, player_level, player_waffe, player_ruestung, player_atk, player_def FROM player WHERE account_id = '".$id."';");
+            $result = $conn->query("SELECT player_name, player_level, player_waffe, player_ruestung, player_atk, player_def, gold FROM player WHERE account_id = '".$id."';");
             if (!$result) { die("MySQL-Fehler: ".$conn->error); }
             $row = $result->fetch_array(MYSQLI_BOTH);
             $_SESSION['player_name'] = $row[0];
@@ -423,6 +507,7 @@ class Account extends Player {
             $_SESSION['player_armor'] = $row[3];
             $_SESSION['player_atk'] = $row[4];
             $_SESSION['player_def'] = $row[5];
+            $_SESSION['player_gold'] = $row[6];
             $_SESSION['player_inventar'] = array($row[2], $row[3]);
             $_SESSION['player_created'] = "True";
             return true;
@@ -435,12 +520,12 @@ class Account extends Player {
         if ($conn->connect_errno) { die("MySQL-Fehler: ".$conn->connect_error); }
         if (isset($_SESSION['login'])) {
             if (isset($_SESSION['player_name']) && isset($_SESSION['player_level'])) {
-                $sql = "UPDATE player SET player_name = '".$_SESSION['player_name']."', player_level = '".$_SESSION['player_level']."', player_waffe = '".$_SESSION['player_weapon']."', player_ruestung = '".$_SESSION['player_armor']."', player_atk = '".$_SESSION['player_atk']."', player_def = '".$_SESSION['player_def']."' WHERE account_id = '".$_SESSION['user_id']."';";
+                $sql = "UPDATE player SET player_name = '".$conn->real_escape_string($_SESSION['player_name'])."', player_level = '".$conn->real_escape_string($_SESSION['player_level'])."', player_waffe = '".$conn->real_escape_string($_SESSION['player_weapon'])."', player_ruestung = '".$conn->real_escape_string($_SESSION['player_armor'])."', player_atk = '".$conn->real_escape_string($_SESSION['player_atk'])."', player_def = '".$conn->real_escape_string($_SESSION['player_def'])."', gold = '".$conn->real_escape_string($_SESSION['player_gold'])."' WHERE account_id = '".$_SESSION['user_id']."';";
                 $result = $conn->query($sql);
                 if (!$result) {
                     die("MySQL-Fehler: ".$conn->error);
                 }
-                else if ($result) {
+                else {
                     return true;
                 }
             }
@@ -541,16 +626,13 @@ class Battle extends Inventar{
 }
 
 class Laden {
+    static $tax = 19;
+    
     function open_shop() {  
     }
     
-    function buy_item( $index ) {
-    }
-    
-    function sell_item( $index ) {
-    } 
-    
-    function tax() {
+    function getTax( $preis ) {
+        return ($preis * $this->tax);
     }
     
 }

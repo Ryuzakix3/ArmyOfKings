@@ -1,6 +1,6 @@
 <ul class="nav nav-tabs">
     <?php
-        $account_handler = new Account;
+       $account_handler = new Account;
         if ($account_handler->isLogin()) {
             echo "<p class=\"navbar-text navbar-right\">Angemeldet als ".$_SESSION['username']."</p>";
         }
@@ -8,7 +8,7 @@
     <li role="presentation"><a href="index.php?p=home">Startseite</a></li>
     <li role="presentation"><a href="index.php?p=create_player">Spieler Erstellen</a></li>
     <li role="presentation" class="active"><a href="index.php?p=delete_player">Spieler Löschen</a></li>
-    <li role="presentation"><a href="index.php?p=mailbox">Postfach</a></li>
+    <li role="presentation"><a href="index.php?p=mailbox">Postfach <span class="badge"><?php if ($account_handler->isLogin()) { echo $_SESSION['unread_msg']; } ?></span></a></li>
     <?php 
         if ($account_handler->isLogin()) { 
             echo "<li role=\"presentation\"><a href=\"index.php?p=logout\">Ausloggen</a></li>"; 
@@ -27,8 +27,8 @@
         <div class="panel-body">
                 <?php
                     if ($account_handler->isLogin()) {
-                        if (!empty($_POST['user_pwd'])) {
-                           if ($account_handler->comparePassword($_POST['user_pwd'])) {
+                        if (isset($_POST['password'])) {
+                           if ($account_handler->comparePassword($_POST['password'])) {
                                if ($account_handler->deletePlayer()) {
                                    echo "<div class=\"alert alert-success\" role=\"alert\">Du hast erfolgreich deinen Spieler gelöscht !. Du wirst in 3 Sekunden zur Startseite weitergeleitet.</div></br>";
                                    echo "<meta http-equiv=\"refresh\" content=\"3; URL=index.php?p=home\">";
@@ -42,13 +42,25 @@
                 ?>
                 <div class="row">
                     <div class="alert alert-warning" role="alert">Wenn du deinen Account löscht ist er für IMMER Weg !!</div>
-                    <div class="col-lg-6">
                     <form action="index.php?p=delete_player" method="post">
-                        <div class="input-group">
-                            <input id="user_pwd" name="password" type="password" class="form-control" placeholder="Passwort">
-                            <span class="input-group-btn">
-                                <button class="btn btn-default" type="submit">Löschen !</button>
-                            </span>
+                        <div class="col-xs-6">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="einfaches-addon1">Passwort:</span>
+                                <input id="password" type="password" name="password" class="form-control" placeholder="Passwort" aria-describedby="einfaches-addon1">
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="btn-group">
+                                <button id="login_button" type="submit" class="btn btn-danger">Spieler Löschen !</button>
+                                <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Menü ein-/ausblenden</span>
+                                </button>
+
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="index.php?p=home">Zurück</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </form>
                 </div>

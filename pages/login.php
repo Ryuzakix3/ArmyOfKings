@@ -60,7 +60,7 @@
                             </button>
 
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="index.php?p=login?login_state=1">Einloggen</a></li>
+                                <li><a href="index.php?p=login">Einloggen</a></li>
                                 <li><a href="index.php?p=register">Register</a></li>
                             </ul>
                         </div>

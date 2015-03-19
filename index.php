@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
+/* 
+ * Copyright (C) 2015 Jonas Golisch
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 -->
 <?php
     ERROR_REPORTING(E_ALL);
     include_once ('./sys_conf/function.inc.php');
     include_once ('./sys_conf/config.inc.php');
-    
     session_start();
 ?>
 <html>
@@ -26,6 +38,17 @@ and open the template in the editor.
     <body>
         <div class="container">
             <?php
+                if (isset($_GET['activated'])) {
+                    $hash = $_GET['activated'];
+                    $activated = new Account();
+                    if ($activated->activateAccount($_GET['activated'])) {
+                        echo "<div class=\"panel panel-default\">";
+                        echo "<div class=\"panel-heading\">Account Aktivierung</div>";
+                        echo "<div class=\"alert alert-success\" role=\"alert\">Dein Account wurde erfolgreich Aktiviert du kannst dich nun einloggen.</div></br>";
+                        echo "</div>";
+                        echo "</div>";
+                    }
+                }
                 if (!empty($_GET['p'])) {
                     if (file_exists("./pages/".$_GET['p'].".php")) {
                         include ('./pages/'.$_GET['p'].".php");

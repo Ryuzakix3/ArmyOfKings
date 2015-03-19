@@ -8,7 +8,7 @@
     <li role="presentation"><a href="index.php?p=home">Startseite</a></li>
     <li role="presentation"><a href="index.php?p=create_player">Spieler Erstellen</a></li>
     <li role="presentation"><a href="index.php?p=delete_player">Spieler Löschen</a></li>
-    <li role="presentation"><a href="index.php?p=mailbox">Postfach</a></li>
+    <li role="presentation"><a href="index.php?p=mailbox">Postfach <span class="badge"><?php if ($login->isLogin()) { echo $_SESSION['unread_msg']; } ?></span></a></li>
     <?php 
         if ($login->isLogin()) { 
             echo "<li role=\"presentation\"><a href=\"index.php?p=logout\">Ausloggen</a></li>"; 
@@ -26,6 +26,11 @@
   <div class="panel-heading">Laden</div>
         <div class="panel-body">
             <?php
+                if ($login->isLogin()) {
+                }
+                else {
+                    echo "<div class=\"alert alert-danger\" role=\"alert\">Du musst dich für diesen Bereich zuerst Anmelden.</div></br>";
+                }
             ?>
         </div>
 </div>
