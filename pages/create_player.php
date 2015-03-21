@@ -2,7 +2,7 @@
     <?php
         $login = new Account;
         if ($login->isLogin()) {
-            echo "<p class=\"navbar-text navbar-right\">Angemeldet als ".$_SESSION['username']."</p>";
+            echo "<p class=\"navbar-text navbar-right\">Angemeldet als <a href=\"index.php?p=profile\">".$_SESSION['username']."</a></p>";
         }
     ?>
     <li role="presentation"><a href="index.php?p=home">Startseite</a></li>

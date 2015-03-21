@@ -226,6 +226,10 @@ class Account extends Player {
     public $email = "";
     public $actived = "1";
     
+    public $random_password_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    public $random_password_length = "";
+    public $random_password = "";
+    
     public $password_error = "";
     public $username_error = "";
     public $email_error = "";
@@ -234,7 +238,7 @@ class Account extends Player {
         if (!empty($this->username)) {
             $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
             if ($conn->connect_errno) {
-                die("MySQL-Fehler: ".$conn->error);
+                die("MySQL-Fehler: ".$conn->connect_error);
             }
             $sql = "SELECT * FROM account WHERE username = '".$conn->real_escape_string($this->username)."';";
             $result = $conn->query($sql);
@@ -251,11 +255,77 @@ class Account extends Player {
         }
     }
     
+    function sendNewPasswordtoEMail() {
+        if (isset($this->email) && isset($this->random_password)) {
+            $to      = $this->email;
+            $subject = 'Neue Passwort';
+            $message = 'Dein neues Passwort ist: '.$this->getRandomPassword();
+            $headers = 'From: noreply@armyofkings.com' . "\r\n" .
+                       'Reply-To: noreply@armyofkings.com' . "\r\n" .
+                       'X-Mailer: PHP/' . phpversion();
+
+            mail($to, $subject, $message, $headers);
+            return true;
+        }      
+    }
+    
+    function saveRandomPasswortToUser() {
+        if (isset($this->random_password)) {
+            $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+            if ($conn->connect_errno) {
+                die("MySQL-Fehler: ".$conn->connect_error);
+            }
+            $password_hash = hash("sha256", $this->random_password);
+            $sql = "UPDATE account SET password = '".$password_hash."' WHERE username = '".$conn->real_escape_string($this->username)."';";
+            $result = $conn->query($sql);
+            if (!$result) {
+                die("MySQL-Fehler: ".$conn->error);
+            }
+            else {
+                return true;
+            }
+        }
+    }
+    
+    function getRandomPassword() {
+        return $this->random_password;
+    }
+    
+    function setRandomPasswordLength( $length ) {
+        $this->random_password_length = $length;
+    }
+    
+    function generateRandomPassword() {
+        $this->random_password = substr(str_shuffle($this->random_password_chars),0,$this->random_password_length);
+    }
+    
+    function checkEmail( $username, $email_to_compare ) {
+        $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+        if ($conn->connect_errno) {
+                die("MySQL-Fehler: ".$conn->connect_error);
+            }
+        $sql = "SELECT email FROM account WHERE username = '".$conn->real_escape_string($username)."';";
+        $result = $conn->query($sql);
+        if (!$result) {
+            die("MySQL-Fehler: ".$conn->error);
+        }
+        $row = $result->fetch_array(MYSQLI_NUM);
+        if ($row[0] == $email_to_compare) {
+            $this->email = $row[0];
+            $this->username = $username;
+            return true;
+        }
+        else {
+            return false;
+        }
+        
+    }
+    
     function isEmailAlreadyUse() {
         if (isset($this->email)) {
             $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
             if ($conn->connect_errno) {
-                die("MySQL-Fehler: ".$conn->error);
+                die("MySQL-Fehler: ".$conn->connect_error);
             }
             $query = "SELECT * FROM account WHERE email = '".$conn->real_escape_string($this->email)."';";
             $result = $conn->query($query);
@@ -282,8 +352,8 @@ class Account extends Player {
     function sendEMail() {
         if (isset($this->activate_hash) && isset($this->email)) {
             $to      = $this->email;
-            $subject = 'Account Activation';
-            $message = 'https://37.228.134.62:8880/index.php?activated='.$this->activate_hash;
+            $subject = 'Account Aktivierung';
+            $message = 'Hier Klicken -> https://37.228.134.62:8880/index.php?activated='.$this->activate_hash;
             $headers = 'From: noreply@armyofkings.com' . "\r\n" .
                        'Reply-To: noreply@armyofkings.com' . "\r\n" .
                        'X-Mailer: PHP/' . phpversion();
@@ -300,7 +370,7 @@ class Account extends Player {
         if (isset($hash)) {
             $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
             if ($conn->connect_errno) {
-                die("MySQL-Fehler0: ".$conn->error);
+                die("MySQL-Fehler: ".$conn->connect_error);
             }
             $sql = "SELECT activatehash, activated FROM account WHERE activatehash = '".$conn->real_escape_string($hash)."';";
             $result = $conn->query($sql);
@@ -403,8 +473,8 @@ class Account extends Player {
     function createNewAccount() {
         $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
         if ($conn->connect_errno) {
-            die("MySQL-Fehler: ".$conn->connect_error);
-        }
+                die("MySQL-Fehler: ".$conn->connect_error);
+            }
         $sql = "INSERT INTO account (account_id, username, password, email, activatehash, activated) VALUES ('', '".$conn->real_escape_string($this->username)."', '".$this->password_sha256."', '".$conn->real_escape_string($this->email)."', '".$this->activate_hash."', '".$this->actived."');";
         $result = $conn->query($sql);
         if (!$result) {
@@ -449,8 +519,8 @@ class Account extends Player {
         $secure_password_2 = hash("sha256", $password_2);
         $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
         if ($conn->connect_errno) {
-            die("MySQL-Fehler: ".$conn->connect_error);
-        }
+                die("MySQL-Fehler: ".$conn->connect_error);
+            }
         $sql = "SELECT password FROM account WHERE account_id = '".$conn->real_escape_string($_SESSION['user_id'])."' LIMIT 1;";
         $result = $conn->query($sql);
         $row = $result->fetch_array(MYSQLI_ASSOC);
@@ -498,8 +568,8 @@ class Account extends Player {
     
     function deletePlayer() {
         $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
-        if ($conn->connect_errno) { 
-            die("MySQL-Fehler: ".$conn->connect_error); 
+        if ($conn->connect_errno) {
+            die("MySQL-Fehler: ".$conn->connect_error);
         }
         $sql = "DELETE FROM player WHERE account_id = '".$conn->real_escape_string($_SESSION['user_id'])."';";
         $result = $conn->query($sql);

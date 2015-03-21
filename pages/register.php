@@ -2,7 +2,7 @@
     <?php
         $login = new Account;
         if ($login->isLogin()) {
-            echo "<p class=\"navbar-text navbar-right\">Angemeldet als ".$_SESSION['username']."</p>";
+            echo "<p class=\"navbar-text navbar-right\">Angemeldet als <a href=\"index.php?p=profile\">".$_SESSION['username']."</a></p>";
         }
     ?>
     <li role="presentation"><a href="index.php?p=home">Startseite</a></li>
@@ -54,8 +54,8 @@
                                                     }
                                                     else {
                                                         if ($create->createNewAccount()) {
-                                                            echo "<div class=\"alert alert-success\" role=\"alert\">Du hast erfolgreich deinen Account erstellt. Du wirst in 3 Sekunden zur Login seite weitergeleitet.</div></br>";
-                                                            echo "<meta http-equiv=\"refresh\" content=\"3; URL=index.php?p=login\">";
+                                                            echo("<div class=\"alert alert-success\" role=\"alert\">Du hast erfolgreich deinen Account erstellt. Du wirst in 3 Sekunden zur Login seite weitergeleitet.</div></br>");
+                                                            echo("<meta http-equiv=\"refresh\" content=\"3; URL=index.php?p=login\">");
                                                         }
                                                     }
                                                 }

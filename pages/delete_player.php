@@ -1,16 +1,16 @@
 <ul class="nav nav-tabs">
     <?php
-       $account_handler = new Account;
-        if ($account_handler->isLogin()) {
-            echo "<p class=\"navbar-text navbar-right\">Angemeldet als ".$_SESSION['username']."</p>";
+        $login = new Account;
+        if ($login->isLogin()) {
+            echo "<p class=\"navbar-text navbar-right\">Angemeldet als <a href=\"index.php?p=profile\">".$_SESSION['username']."</a></p>";
         }
     ?>
     <li role="presentation"><a href="index.php?p=home">Startseite</a></li>
     <li role="presentation"><a href="index.php?p=create_player">Spieler Erstellen</a></li>
     <li role="presentation" class="active"><a href="index.php?p=delete_player">Spieler Löschen</a></li>
-    <li role="presentation"><a href="index.php?p=mailbox">Postfach <span class="badge"><?php if ($account_handler->isLogin()) { echo $_SESSION['unread_msg']; } ?></span></a></li>
+    <li role="presentation"><a href="index.php?p=mailbox">Postfach <span class="badge"><?php if ($login->isLogin()) { echo $_SESSION['unread_msg']; } ?></span></a></li>
     <?php 
-        if ($account_handler->isLogin()) { 
+        if ($login->isLogin()) { 
             echo "<li role=\"presentation\"><a href=\"index.php?p=logout\">Ausloggen</a></li>"; 
         }
         else {
@@ -26,10 +26,10 @@
   <div class="panel-heading">Spieler Löschen</div>
         <div class="panel-body">
                 <?php
-                    if ($account_handler->isLogin()) {
+                    if ($login->isLogin()) {
                         if (isset($_POST['password'])) {
-                           if ($account_handler->comparePassword($_POST['password'])) {
-                               if ($account_handler->deletePlayer()) {
+                           if ($login->comparePassword($_POST['password'])) {
+                               if ($login->deletePlayer()) {
                                    echo "<div class=\"alert alert-success\" role=\"alert\">Du hast erfolgreich deinen Spieler gelöscht !. Du wirst in 3 Sekunden zur Startseite weitergeleitet.</div></br>";
                                    echo "<meta http-equiv=\"refresh\" content=\"3; URL=index.php?p=home\">";
                                }
