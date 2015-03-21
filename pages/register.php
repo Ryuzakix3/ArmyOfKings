@@ -40,22 +40,27 @@
                                         if ($create->hashPassword()) {
                                             if (isset($_POST['email'])) {
                                                 $create->setEmail($_POST['email']);
-                                                if ($site_settings['email_activation']) {
-                                                    $create->setActivateHash();
-                                                    if ($create->sendEMail()) {
-                                                        if ($create->createNewAccount()) {
-                                                            echo "<div class=\"alert alert-success\" role=\"alert\">Bitte schaue in deinen Postfach um deinen Account zu bestätigen.</div></br>";
+                                                if (!$create->isEmailAlreadyUse()) {
+                                                    if ($site_settings['email_activation']) {
+                                                        $create->setActivateHash();
+                                                        if ($create->sendEMail()) {
+                                                            if ($create->createNewAccount()) {
+                                                                echo "<div class=\"alert alert-success\" role=\"alert\">Bitte schaue in deinen Postfach um deinen Account zu bestätigen.</div></br>";
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo "<div class=\"alert alert-success\" role=\"alert\">Fehler beim senden der e-Mail !</div></br>";
                                                         }
                                                     }
                                                     else {
-                                                        echo "<div class=\"alert alert-success\" role=\"alert\">Fehler beim senden der e-Mail !</div></br>";
+                                                        if ($create->createNewAccount()) {
+                                                            echo "<div class=\"alert alert-success\" role=\"alert\">Du hast erfolgreich deinen Account erstellt. Du wirst in 3 Sekunden zur Login seite weitergeleitet.</div></br>";
+                                                            echo "<meta http-equiv=\"refresh\" content=\"3; URL=index.php?p=login\">";
+                                                        }
                                                     }
                                                 }
                                                 else {
-                                                    if ($create->createNewAccount()) {
-                                                        echo "<div class=\"alert alert-success\" role=\"alert\">Du hast erfolgreich deinen Account erstellt. Du wirst in 3 Sekunden zur Login seite weitergeleitet.</div></br>";
-                                                        echo "<meta http-equiv=\"refresh\" content=\"3; URL=index.php?p=login\">";
-                                                    }
+                                                     echo("<div class=\"alert alert-danger\" role=\"alert\">".$create->getEmailError()."</div>");
                                                 }
                                             }
                                         }

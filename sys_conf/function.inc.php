@@ -4,8 +4,8 @@ include './sys_conf/config.inc.php';
 class Database {
     // DB SETTINGS //
     public $mysql_addr = "localhost";
-    public $mysql_user = "root";
-    public $mysql_password = "9002052863000";
+    public $mysql_user = "";
+    public $mysql_password = "";
     public $mysql_database = "homepage";
     // DB SETTINGS //
 }
@@ -228,6 +228,7 @@ class Account extends Player {
     
     public $password_error = "";
     public $username_error = "";
+    public $email_error = "";
     
     function isUsernameFree() {
         if (!empty($this->username)) {
@@ -250,9 +251,30 @@ class Account extends Player {
         }
     }
     
+    function isEmailAlreadyUse() {
+        if (isset($this->email)) {
+            $conn = new mysqli($this->mysql_addr, $this->mysql_user, $this->mysql_password, $this->mysql_database);
+            if ($conn->connect_errno) {
+                die("MySQL-Fehler: ".$conn->error);
+            }
+            $query = "SELECT * FROM account WHERE email = '".$conn->real_escape_string($this->email)."';";
+            $result = $conn->query($query);
+            if (!$result) {
+                die("MySQL-Fehler: ".$conn->error);
+            }
+            else if ($result->num_rows == 1) {
+                $this->email_error = "Es existiert bereits ein Account mit dieser Email !";
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    }
+    
     function setActivateHash() {
         if (isset($this->username)) {
-            $this->activate_hash = hash("sha256", $this->username);
+            $this->activate_hash = md5($this->username);
             $this->actived = "0";
         }
     }
@@ -308,6 +330,12 @@ class Account extends Player {
     function getPasswordError() {
         if (!empty($this->password_error)) {
             return $this->password_error;
+        }
+    }
+    
+    function getEmailError() {
+        if (!empty($this->email_error)) {
+            return $this->email_error;
         }
     }
     

@@ -61,6 +61,7 @@
 
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="index.php?p=login">Einloggen</a></li>
+                                <li><a href="index.php?p=pw_reset">Passwort Vergessen ?</a></li>
                                 <li><a href="index.php?p=register">Register</a></li>
                             </ul>
                         </div>
