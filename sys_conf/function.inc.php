@@ -451,6 +451,23 @@ class Account extends Player {
         }
         
     }
+
+    function checkPasswordIsSame( $password_to_compare ) {
+        if (!empty($this->password)) {
+            if (strlen($password_to_compare) > 0) {
+                if ($password_to_compare == $this->password) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+
+    }
     
     function setEmail( $mail ) {
         if (!empty($mail)) {

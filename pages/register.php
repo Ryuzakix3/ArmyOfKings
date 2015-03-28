@@ -36,40 +36,45 @@
                             if ($create->isUsernameFree()) {
                                 if (isset($_POST['password'])) {
                                     $create->setPassword($_POST['password']);
-                                    if ($create->isPasswordSafty()) {
-                                        if ($create->hashPassword()) {
-                                            if (isset($_POST['email'])) {
-                                                $create->setEmail($_POST['email']);
-                                                if (!$create->isEmailAlreadyUse()) {
-                                                    if ($site_settings['email_activation']) {
-                                                        $create->setActivateHash();
-                                                        if ($create->sendEMail()) {
-                                                            if ($create->createNewAccount()) {
-                                                                echo "<div class=\"alert alert-success\" role=\"alert\">Bitte schaue in deinen Postfach um deinen Account zu bestätigen.</div></br>";
+                                    if ($create->checkPasswordIsSame($_POST['password2'])) {
+                                        if ($create->isPasswordSafty()) {
+                                            if ($create->hashPassword()) {
+                                                if (isset($_POST['email'])) {
+                                                    $create->setEmail($_POST['email']);
+                                                    if (!$create->isEmailAlreadyUse()) {
+                                                        if ($site_settings['email_activation']) {
+                                                            $create->setActivateHash();
+                                                            if ($create->sendEMail()) {
+                                                                if ($create->createNewAccount()) {
+                                                                    echo "<div class=\"alert alert-success\" role=\"alert\">Bitte schaue in deinen Postfach um deinen Account zu bestätigen.</div></br>";
+                                                                }
+                                                            }
+                                                            else {
+                                                                echo "<div class=\"alert alert-success\" role=\"alert\">Fehler beim senden der e-Mail !</div></br>";
                                                             }
                                                         }
                                                         else {
-                                                            echo "<div class=\"alert alert-success\" role=\"alert\">Fehler beim senden der e-Mail !</div></br>";
+                                                            if ($create->createNewAccount()) {
+                                                                echo("<div class=\"alert alert-success\" role=\"alert\">Du hast erfolgreich deinen Account erstellt. Du wirst in 3 Sekunden zur Login seite weitergeleitet.</div></br>");
+                                                                echo("<meta http-equiv=\"refresh\" content=\"3; URL=index.php?p=login\">");
+                                                            }
                                                         }
                                                     }
                                                     else {
-                                                        if ($create->createNewAccount()) {
-                                                            echo("<div class=\"alert alert-success\" role=\"alert\">Du hast erfolgreich deinen Account erstellt. Du wirst in 3 Sekunden zur Login seite weitergeleitet.</div></br>");
-                                                            echo("<meta http-equiv=\"refresh\" content=\"3; URL=index.php?p=login\">");
-                                                        }
+                                                        echo("<div class=\"alert alert-danger\" role=\"alert\">".$create->getEmailError()."</div>");
                                                     }
                                                 }
-                                                else {
-                                                     echo("<div class=\"alert alert-danger\" role=\"alert\">".$create->getEmailError()."</div>");
-                                                }
+                                            }
+                                            else {
+                                                echo("<div class=\"alert alert-danger\" role=\"alert\">Fehler beim Hashen des Passworts !</div>");
                                             }
                                         }
                                         else {
-                                            echo("<div class=\"alert alert-danger\" role=\"alert\">Fehler beim Hashen des Passworts !</div>");
+                                            echo("<div class=\"alert alert-danger\" role=\"alert\">".$create->getPasswordError()."</div>");
                                         }
                                     }
                                     else {
-                                        echo("<div class=\"alert alert-danger\" role=\"alert\">".$create->getPasswordError()."</div>");
+                                        echo("<div class=\"alert alert-danger\" role=\"alert\">Dein Passwort ist ungültig ! Hast du dich vielleicht Vertippt ?</div>");
                                     }
                                 } 
                             }
@@ -87,22 +92,24 @@
                     ?>
                     <form action="index.php?p=register" method="post">
                         <div class="input-group">
-                            <span class="glyphicon glyphicon-user" aria-hidden="true">Benutzername:</span>
-                            <input name="username" type="text" class="form-control" placeholder="" aria-describedby="einfaches-addon1" required>
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"> Benutzername:</span>
+                            <input name="username" id="username" type="text" class="form-control" placeholder="" aria-describedby="einfaches-addon1" required>
                             <span class="help-block">Minimum 3 characters</span>
                         </div>
                         <div class="input-group">
-                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true">Passwort:</span>
-                            <input name="password" type="password" data-minlength="6" class="form-control" placeholder="" aria-describedby="einfaches-addon1" required>
+                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true"> Passwort:</span>
+                            <input name="password" id="normal_password" type="password" data-minlength="6" class="form-control" placeholder="" aria-describedby="einfaches-addon1" required>
                             <span class="help-block">Minimum 6 characters</span>
                         </div>
                         <div class="input-group">
-                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true">Passwort:</span>
-                            <input type="password" data-minlength="6" class="form-control" placeholder="" aria-describedby="einfaches-addon1" required>
+                            <span class="glyphicon glyphicon-asterisk" aria-hidden="true"> Passwort:</span>
+                            <input name="password2" id="confirmpassword" type="password" data-minlength="6" class="form-control" placeholder="" aria-describedby="einfaches-addon1" required>
                             <span class="help-block">Minimum 6 characters</span>
                         </div>
+                        <div class="PasswordAlert" id="CheckPasswordMatch">
+                        </div>
                         <div class="input-group">
-                            <span class="glyphicon glyphicon-envelope" aria-hidden="true">E-Mail:</span>
+                            <span class="glyphicon glyphicon-envelope" aria-hidden="true"> E-Mail:</span>
                             <input name="email" type="email" class="form-control" placeholder="" aria-describedby="einfaches-addon1" required>
                             <span class="help-block">Use a valid Email</span>
                         </div>
@@ -112,3 +119,13 @@
             </div>
         </div>
 </div>
+
+<script type="text/javascript">
+    $(function() {
+        $("#confirmpassword").keyup(function() {
+            var password = $("#normal_password").val();
+            $("#CheckPasswordMatch").html(password == $(this).val() ? "Passwords match." : "Passwords do not match!");
+        });
+    });
+
+</script>
