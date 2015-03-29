@@ -219,6 +219,7 @@ class player extends Database{
 }
 
 class Account extends Player {
+    public $username_badchars = "/[\'^£$%&*()}{@#~?><>,|=_+¬-]/";
     public $username = "";
     public $password = "";
     public $password_sha256 = "";
@@ -233,6 +234,18 @@ class Account extends Player {
     public $password_error = "";
     public $username_error = "";
     public $email_error = "";
+    
+    
+    function isUsernameFreeofSpecialChars() {
+        if (!empty($this->username)) {
+            if(preg_match($this->username_badchars, $this->username)) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    }
     
     function isUsernameFree() {
         if (!empty($this->username)) {
